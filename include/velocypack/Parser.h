@@ -32,149 +32,19 @@
 #include <memory>
 #include <utility>
 
-#include "tao/json.hpp"
-
 #include "velocypack/velocypack-common.h"
-#include "velocypack/Builder.h"
+#include "velocypack/Json.h"
 #include "velocypack/Exception.h"
-#include "velocypack/Options.h"
-#include "velocypack/Value.h"
-#include "velocypack/ValueType.h"
 
 namespace arangodb {
 namespace velocypack {
 
-   // Implementation of the taocpp/json Events
-   // API that feeds into a velocypack Builder.
-
-   class toBuilderEvents
-   {
-      std::string m_key;
-      bool m_member = false;
-
-   public:
-      std::shared_ptr< Builder > builder;
-
-      toBuilderEvents()
-         : builder( std::make_shared< Builder >() )
-      {
-      }
-
-      toBuilderEvents( std::shared_ptr< Builder > && builder )
-         : builder( std::move( builder ) )
-      {
-      }
-
-      toBuilderEvents( const std::shared_ptr< Builder > & builder )
-         : builder( builder )
-      {
-      }
-
-      void add( const Value & v )
-      {
-         if ( m_member ) {
-            builder->add( m_key, v );
-            m_member = false;
-         }
-         else {
-            builder->add( v );
-         }
-      }
-
-      void null()
-      {
-         add(Value(ValueType::Null));
-      }
-
-      void boolean( const bool v )
-      {
-         add(Value(v));
-      }
-
-      void number( const std::int64_t v )
-      {
-         add(Value(v));
-      }
-
-      void number( const std::uint64_t v )
-      {
-         add(Value(v));
-      }
-
-      void number( const double v )
-      {
-         add(Value(v));
-      }
-
-      void string( const std::string& v )
-      {
-         add(Value(v));
-      }
-
-      void begin_array()
-      {
-         add(Value(ValueType::Array));
-      }
-
-      void begin_array( const std::size_t )
-      {
-         begin_array();
-      }
-
-      void element()
-      {
-      }
-
-      void end_array()
-      {
-         builder->close();
-      }
-
-      void end_array( const std::size_t )
-      {
-         end_array();
-      }
-
-      void begin_object()
-      {
-         add(Value(ValueType::Object));
-      }
-
-      void begin_object( const std::size_t )
-      {
-         begin_object();
-      }
-
-      void key( const std::string& v )
-      {
-         m_key = v;
-         m_member = true;
-      }
-
-      void key( std::string&& v )
-      {
-         m_key = std::move( v );
-         m_member = true;
-      }
-
-      void member()
-      {
-      }
-
-      void end_object()
-      {
-         builder->close();
-      }
-
-      void end_object( const std::size_t )
-      {
-         end_object();
-      }
-   };
+   // Parser class with the same interface as before
+   // the integration of taocpp/json.
 
 class Parser {
 
-   toBuilderEvents _e;
+   EventsToBuilder _e;
 
  public:
   Options const* options;
