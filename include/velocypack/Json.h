@@ -230,19 +230,31 @@ namespace arangodb
          sliceToEvents( consumer, Slice( builder.start() ) );
       }
 
-      inline std::string builderToJson( const Builder& builder )
+      inline void builderToJsonStream( std::ostream& stream, const Builder& builder )
       {
-         tao::json::events::to_string e;
-         builderToEvents( e, builder );
-         return e.value();
+         tao::json::events::to_stream events( stream );
+         builderToEvents( events, builder );
       }
 
-      inline std::string builderToPrettyJson( const Builder& builder )
+      inline void builderToPrettyJsonStream( std::ostream& stream, const Builder& builder, const std::size_t indent = 3 )
       {
-         return builderToJson( builder );  // TODO: Use tao::json::events::to_pretty_stream.
+         tao::json::events::to_pretty_stream events( stream, indent );
+         builderToEvents( events, builder );
       }
 
-      // TODO: Wrappers for other taocpp/json Events consumers like to_stream.
+      inline std::string builderToJsonString( const Builder& builder )
+      {
+         std::ostringstream stream;
+         builderToJsonStream( stream, builder );
+         return stream.str();
+      }
+
+      inline std::string builderToPrettyJsonString( const Builder& builder, const std::size_t indent = 3 )
+      {
+         std::ostringstream stream;
+         builderToPrettyJsonStream( stream, builder, indent );
+         return stream.str();
+      }
 
    } // velocypack
 
